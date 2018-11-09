@@ -1,5 +1,5 @@
 # (c) 2018, Roman Miroshnychenko <roman1972@gmail.com>
-# License: 
+# License: GPL v.3
 
 import argparse
 import os
@@ -32,13 +32,13 @@ def generate_doxy_docs():
 
 
 def main():
-    args = parse_arguments()
     if not os.path.exists(build_dir):
         os.mkdir(build_dir)
+    args = parse_arguments()
     src_dir = os.path.join(args.kodi_src, 'xbmc', 'interfaces', 'legacy')
+    swig_dir = os.path.join(args.kodi_src, 'build', 'swig')
     create_doxyfile(src_dir)
     generate_doxy_docs()
-    swig_dir = os.path.join(args.kodi_src, 'build', 'swig')
     template_py = jinja_env.get_template('module.py.tpl')
     template_rst = jinja_env.get_template('module.rst.tpl')
     module_docs = parse(docs_dir, swig_dir)
