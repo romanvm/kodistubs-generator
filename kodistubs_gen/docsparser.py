@@ -238,6 +238,7 @@ def flatten_classes(docs):
         if class_['classes']:
             for child_class in flatten_classes(class_):
                 yield child_class
+        del class_['classes']
 
 
 def parse(docs_dir, swig_dir):
