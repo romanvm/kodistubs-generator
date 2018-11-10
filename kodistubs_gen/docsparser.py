@@ -1,10 +1,11 @@
+"""
+Parser for Doxygen XML docs for Kodi Python API functions and classes
+"""
 import os
 import re
 from xml.sax import parseString, ContentHandler
 from lxml import etree
 from .swigparser import parse_swig_xml
-
-from pprint import pprint
 
 MODULES = [
     'group__python__xbmc.xml',
@@ -155,12 +156,24 @@ def clean_docstring(docs):
 
 
 def parse_description(description_tag):
+    """
+    Parse an etree node with function/class description
+
+    :param description_tag: etree node with function/class description
+    :return: function/class description as a string
+    """
     handler = DocsHandler()
     parseString(etree.tostring(description_tag).decode('utf-8').replace('\n', ''), handler)
     return handler.as_string()
 
 
 def parse_function_docs(memberdef_tag):
+    """
+    Parse an etree node with function docs
+
+    :param memberdef_tag: etree node with function docs
+    :return: function docstring
+    """
     briefdescription = memberdef_tag.find('briefdescription')
     docstring = parse_description(briefdescription)
     detaileddescription = memberdef_tag.find('detaileddescription')
@@ -169,6 +182,13 @@ def parse_function_docs(memberdef_tag):
 
 
 def parse_xml_docs(xml_docs, docs_dir):
+    """
+    Parse and XML Doxygen docs file
+
+    :param xml_docs: path to a XML docs file
+    :param docs_dir: directory where Doxygen docs are located
+    :return: docs dict object with module info extracted from an XML docs file
+    """
     root_tag = etree.parse(xml_docs)
     compounddef_tag = root_tag.find('compounddef')
     innerclass_tag = compounddef_tag.find('innerclass')
@@ -207,6 +227,12 @@ def parse_xml_docs(xml_docs, docs_dir):
 
 
 def flatten_classes(docs):
+    """
+    Flatten classes hierarchy in docs dictionary
+
+    :param docs: docs dict object
+    :return: docs dict with flattened classes
+    """
     for class_ in docs['classes']:
         yield class_
         if class_['classes']:
@@ -215,6 +241,14 @@ def flatten_classes(docs):
 
 
 def parse(docs_dir, swig_dir):
+    """
+    High-level parser function
+
+    :param docs_dir: directory where Doxygen docs are located
+    :param swig_dir: directory where SWIG XML definitions are located
+    :return: docs dictionary containing all necessary info for generating
+        a Python stub and a Sphinx automodule definition
+    """
     docs = []
     for module in MODULES:
         module_xml = os.path.join(docs_dir, 'xml', module)

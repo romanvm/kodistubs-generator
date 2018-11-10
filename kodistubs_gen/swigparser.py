@@ -1,3 +1,6 @@
+"""
+Parser for SWIG-generated XML definitions of Kodi Python API modules
+"""
 import os
 import re
 from lxml import etree
@@ -114,36 +117,73 @@ BASE_CLASS_SUBS = [
 
 
 def clean_decl(decl):
+    """
+    Convert SWIG type declarations for arguments to Python types
+
+    :param decl: SWIG argument type
+    :return: Python argument type
+    """
     for sub in DECL_TYPE_SUBS:
         decl = sub[0].sub(sub[1], decl)
     return decl
 
 
 def clean_value(val):
+    """
+    Convert C++ default arguments to Python
+
+    :param val: C++ argument as string
+    :return: Python argument
+    """
     for sub in VALUE_SUBS:
         val = sub[0].sub(sub[1], val)
     return val
 
 
 def clean_rtype(rtype):
+    """
+    Convert SWIG return types to Python
+
+    :param rtype: SWIG return type
+    :return: Python return type
+    """
     for sub in RET_TYPE_SUBS:
         rtype = sub[0].sub(sub[1], rtype)
     return rtype
 
 
 def clean_retvalue(retvalue):
+    """
+    Convert Python return types to actual Python return statements
+
+    :param retvalue: Python type
+    :return: Python return statement
+    """
     if retvalue in RET_VALUE_SUBS:
         retvalue = RET_VALUE_SUBS[retvalue]
     return retvalue
 
 
 def clean_base_class(base_class):
+    """
+    Convert SWIG base classes to Python
+
+    :param base_class: SWIG base class
+    :return: Python base class
+    """
     for sub in BASE_CLASS_SUBS:
         base_class = base_class.replace(sub[0], sub[1])
     return base_class
 
 
 def parse_function(func_doc, attributelist_tag, is_method=False):
+    """
+    Parse an etree node with a function definition
+
+    :param func_doc: docs dict for the function
+    :param attributelist_tag: etree node with function definition
+    :param is_method: True if this is a method of a class
+    """
     decl_tag = attributelist_tag.xpath('./attribute[@name="decl"]')[0]
     decl = clean_decl(decl_tag.attrib['value']).rstrip('.p')
     type_tags = attributelist_tag.xpath('./attribute[@name="type"]')
@@ -175,6 +215,13 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
 
 
 def parse_swig_xml(module_docs, swig_dir):
+    """
+    Parse SWIG-generated module definition
+
+    :param module_docs: docs dictionary object
+    :param swig_dir: directory where SWIG XML definitions are located
+    :return:
+    """
     swig_xml = os.path.join(swig_dir, SWIG_XML[module_docs['name']])
     root_tag = etree.parse(swig_xml)
     module_docs['__name__'] = root_tag.xpath(

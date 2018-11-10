@@ -1,5 +1,9 @@
 # (c) 2018, Roman Miroshnychenko <roman1972@gmail.com>
 # License: GPL v.3
+"""
+Script for semi-autoamated generation of
+`Kodistubs <https://github.com/romanvm/Kodistubs>`_ from Kodi source files.
+"""
 
 import argparse
 import os
