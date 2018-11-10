@@ -6,6 +6,7 @@ Script for semi-autoamated generation of
 """
 
 import argparse
+import json
 import os
 from subprocess import run
 from jinja2 import Environment, FileSystemLoader
@@ -47,6 +48,8 @@ def main():
     template_rst = jinja_env.get_template('module.rst.tpl')
     module_docs = parse(docs_dir, swig_dir)
     for mod in module_docs:
+        with open(os.path.join(build_dir, mod['__name__'] + '.json'), 'w') as fo:
+            json.dump(mod, fo, indent=2)
         module_py = template_py.render(module=mod)
         with open(os.path.join(build_dir, mod['__name__'] + '.py'), 'w',
                   encoding='utf-8') as fo:
