@@ -37,13 +37,15 @@ def generate_doxy_docs():
 
 
 def main():
+    print('Generating Kodistubs...')
     if not os.path.exists(build_dir):
         os.mkdir(build_dir)
     args = parse_arguments()
     src_dir = os.path.join(args.kodi_src, 'xbmc', 'interfaces', 'legacy')
     swig_dir = os.path.join(args.kodi_src, 'build', 'swig')
-    create_doxyfile(src_dir)
-    generate_doxy_docs()
+    if not os.path.exists(os.path.join(docs_dir, 'xml')):
+        create_doxyfile(src_dir)
+        generate_doxy_docs()
     template_py = jinja_env.get_template('module.py.tpl')
     template_rst = jinja_env.get_template('module.rst.tpl')
     module_docs = parse(docs_dir, swig_dir)
@@ -61,6 +63,7 @@ def main():
         with open(os.path.join(build_dir, mod['__name__'] + '.rst'), 'w',
                   encoding='utf-8') as fo:
             fo.write(module_rst)
+    print('Done')
 
 
 if __name__ == '__main__':
