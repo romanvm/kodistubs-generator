@@ -50,6 +50,7 @@ def main():
     template_rst = jinja_env.get_template('module.rst.tpl')
     module_docs = parse(docs_dir, swig_dir)
     for mod in module_docs:
+        print('Writing {}...'.format(mod['__name__']))
         with open(os.path.join(build_dir, mod['__name__'] + '.json'), 'w') as fo:
             json.dump(mod, fo, indent=2)
         module_py = template_py.render(module=mod)
