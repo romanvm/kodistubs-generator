@@ -23,6 +23,8 @@ jinja_env = Environment(loader=FileSystemLoader(template_dir))
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Kodistubs generator')
     parser.add_argument('kodi_src', nargs='?', help='Kodi sources dir')
+    parser.add_argument('-o', '--overwrite', action='store_true',
+                        help='Overwrite Doxygen docs')
     return parser.parse_args()
 
 
@@ -43,7 +45,7 @@ def main():
     args = parse_arguments()
     src_dir = os.path.join(args.kodi_src, 'xbmc', 'interfaces', 'legacy')
     swig_dir = os.path.join(args.kodi_src, 'build', 'swig')
-    if not os.path.exists(os.path.join(docs_dir, 'xml')):
+    if args.overwrite or not os.path.exists(os.path.join(docs_dir, 'xml')):
         create_doxyfile(src_dir)
         generate_doxy_docs()
     template_py = jinja_env.get_template('module.py.tpl')
