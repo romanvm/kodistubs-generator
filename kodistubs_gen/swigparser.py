@@ -15,7 +15,7 @@ SWIG_XML = {
     'CryptoSession': 'AddonModuleXbmcdrm.i.xml',
 }
 
-
+# For similar patterns longer patterns should precede shorter ones
 DECL_TYPE_SUBS = [
     (re.compile(r'^f'), 'type: '),
     (re.compile(r'r\.q\(const\)\.XBMCAddon::xbmcgui::InfoLabelDict'), 'Dict[str,str_type]'),
