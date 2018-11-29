@@ -3,7 +3,7 @@ Parser for SWIG-generated XML definitions of Kodi Python API modules
 """
 import os
 import re
-from lxml import etree
+import lxml.etree as etree
 
 
 SWIG_XML = {
