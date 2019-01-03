@@ -212,7 +212,7 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
             params.append(param)
     # Rename xbmcvfs.Stat.atime, mtime and ctime methods
     if func_doc['name'] in {'atime', 'mtime', 'ctime'}:
-        func_doc['name'] = 'cm_' + func_doc['name']
+        func_doc['name'] = 'st_' + func_doc['name']
     func_doc['signature'] = '{name}({params})'.format(
         name=func_doc['name'],
         params=', '.join(params)
