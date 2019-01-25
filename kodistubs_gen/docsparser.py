@@ -214,10 +214,23 @@ def parse_xml_docs(xml_docs, docs_dir):
         })
     classes = []
     for innergroup_tag in compounddef_tag.findall('innergroup'):
-        classes.append(parse_xml_docs(
-            os.path.join(docs_dir, 'xml', innergroup_tag.attrib['refid'] + '.xml'),
-            docs_dir)
+        class_xml_name = innergroup_tag.attrib['refid']
+        innergroup_xml_docs = parse_xml_docs(
+            os.path.join(docs_dir, 'xml', class_xml_name + '.xml'),
+            docs_dir
         )
+        if (name in (
+                'Player',
+                'Window'
+                ) and
+                class_xml_name in (
+                        'group__python__PlayerCB',
+                        'group__python__xbmcgui__window__cb'
+                    )
+                ):
+            functions += innergroup_xml_docs['functions']
+        else:
+            classes.append(innergroup_xml_docs)
     return {
         'name': name,
         'docstring': docstring,

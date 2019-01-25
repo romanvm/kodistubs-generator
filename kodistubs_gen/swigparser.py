@@ -33,6 +33,7 @@ DECL_TYPE_SUBS = [
     (re.compile(r'p\.q\(const\)\.XBMCAddon::xbmcgui::Control'), 'Control'),
     (re.compile(r'p\.XBMCAddon::xbmcgui::Control'), 'Control'),
     (re.compile(r'r?\.?q\(const\)\.XBMCAddon::String'), 'str_type'),
+    (re.compile(r'p\.XBMCAddon::xbmcgui::Action'), 'Action'),
     (re.compile(r'XBMCAddon::String'), 'str_type'),
     (re.compile(r'r?\.?q\(const\)\.String'), 'str_type'),
     (re.compile(r'String'), 'str_type'),
