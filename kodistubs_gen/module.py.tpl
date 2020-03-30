@@ -9,9 +9,6 @@ from typing import Union, List, Dict, Tuple
 
 __kodistubs__ = True
 
-int_type = Union[int, long]
-str_type = Union[str, unicode]
-
 {% for const in module.constants %}
 {{ const }}
 {%- endfor %}
