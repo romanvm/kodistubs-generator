@@ -59,8 +59,8 @@ DECL_TYPE_SUBS = [
 RET_TYPE_SUBS = [
     (re.compile(r'void'), 'None'),
     (re.compile(r'double'), 'float'),
-    (re.compile(r'long'), 'int'),
     (re.compile(r'long long'), 'int'),
+    (re.compile(r'long'), 'int'),
     (re.compile(r'unsigned int'), 'int'),
     (re.compile(r'xbmc::InfoTagVideo'), 'InfoTagVideo'),
     (re.compile(r'xbmc::InfoTagMusic'), 'InfoTagMusic'),
@@ -90,6 +90,8 @@ VALUE_SUBS = [
     (re.compile(r'Player::defaultPlayParameter'), '""'),
     (re.compile(r'std::vector< int >\(\)'), 'None'),
     (re.compile(r'NULL'), 'None'),
+    (re.compile(r'XBMCAddon::xbmcgui::INPUT_ALPHANUM'), 'INPUT_ALPHANUM'),
+    (re.compile(r'SEEK_SET'), '0'),
 ]
 
 RET_VALUE_SUBS = {
@@ -106,7 +108,7 @@ RET_VALUE_SUBS = {
     'long': 'return 0',
     'float': 'return 0.0',
     'bool': 'return True',
-    'unicode': 'return u""',
+    'unicode': 'return ""',
     'InfoTagVideo': 'return InfoTagVideo()',
     'InfoTagMusic': 'return InfoTagMusic()',
     'InfoTagRadioRDS': 'return InfoTagRadioRDS()',
