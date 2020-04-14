@@ -17,7 +17,6 @@ SWIG_XML = {
 
 # For similar patterns longer patterns should precede shorter ones
 DECL_TYPE_SUBS = [
-    (re.compile(r'^f'), 'type: '),
     (re.compile(r'r\.q\(const\)\.XBMCAddon::xbmcgui::InfoLabelDict'), 'Dict[str,str]'),
     (re.compile(r'r\.q\(const\)\.XBMCAddon::Properties'), 'Dict[str,str]'),
     (re.compile(r'r\.q\(const\)\.std::vector<\(XBMCAddon::Properties\)>'), 'List[Dict[str,str]]'),
@@ -117,12 +116,12 @@ RET_VALUE_SUBS = {
 
 
 BASE_CLASS_SUBS = [
-    ('AddonClass', 'object'),
-    ('AddonCallback', 'object'),
+    ('AddonClass', ''),
+    ('AddonCallback', ''),
 ]
 
 
-def clean_decl(decl):
+def clean_type(decl):
     """
     Convert SWIG type declarations for arguments to Python types
 
@@ -190,37 +189,39 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
     :param attributelist_tag: etree node with function definition
     :param is_method: True if this is a method of a class
     """
-    decl_tag = attributelist_tag.xpath('./attribute[@name="decl"]')[0]
-    decl = clean_decl(decl_tag.attrib['value']).rstrip('.p')
-    type_tags = attributelist_tag.xpath('./attribute[@name="type"]')
-    if type_tags:
-        rtype = clean_rtype(type_tags[0].attrib['value'])
+    rtype_tags = attributelist_tag.xpath('./attribute[@name="type"]')
+    if rtype_tags:
+        rtype = clean_rtype(rtype_tags[0].attrib['value'])
     else:
         rtype = 'None'
     if rtype == 'str':
         unicode_tag = attributelist_tag.xpath('./attribute[@name="feature_python_coerceToUnicode"]')
         if unicode_tag:
             rtype = 'unicode'
-    func_doc['type_annot'] = decl + ' -> ' + rtype
     func_doc['return'] = clean_retvalue(rtype)
     param_tags = attributelist_tag.xpath('./parmlist/parm/attributelist')
     params = []
-    if is_method:
-        params.append('self')
     if param_tags:
         for param_tag in param_tags:
             param = param_tag.xpath('./attribute[@name="name"]')[0].attrib['value']
+            param_type = param_tag.xpath('./attribute[@name="type"]')[0].attrib['value']
+            param_type = clean_type(param_type).strip()
+            param += ': ' + param_type
             value_tag = param_tag.xpath('./attribute[@name="value"]')
             if value_tag:
-                param += '=' + clean_value(value_tag[0].attrib['value'])
+                param += ' = ' + clean_value(value_tag[0].attrib['value'])
             params.append(param)
+    if is_method and params:
+        params[0] = 'self, ' + params[0]
+    elif is_method and not params:
+        params.append('self')
     # Rename xbmcvfs.Stat.atime, mtime and ctime methods
     if func_doc['name'] in {'atime', 'mtime', 'ctime'}:
         func_doc['name'] = 'st_' + func_doc['name']
-    func_doc['signature'] = '{name}({params})'.format(
-        name=func_doc['name'],
-        params=', '.join(params)
-    )
+    func_doc['params'] = params
+    func_doc['rtype'] = rtype
+    offset = 5 if is_method else 1
+    func_doc['indent'] = len('def ' + func_doc['name']) + offset
 
 
 def parse_swig_xml(module_docs, swig_dir):

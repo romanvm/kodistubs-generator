@@ -14,13 +14,12 @@ __kodistubs__ = True
 {%- endfor %}
 
 {% for class in module.classes %}
-class {{ class.name }}({{ class.base_class }}):
+class {{ class.name }}{% if class.base_class %}({{ class.base_class }}){% endif %}:
     """
     {{ class.docstring|indent }}
     """
     {% for method in class.functions %}
-    def {{ method.signature }}:
-        # {{ method.type_annot }}
+    def {{ method.name }}({{ method.params|join(',\n')|indent(method.indent) }}) -> {{ method.rtype }}:
         {%- if method.docstring %}
         """
         {{ method.docstring|indent(width=8) }}
@@ -31,8 +30,7 @@ class {{ class.name }}({{ class.base_class }}):
 {% endfor %}
 
 {% for func in module.functions %}
-def {{ func.signature }}:
-    # {{ func.type_annot }}
+def {{ func.name }}({{ func.params|join(',\n')|indent(func.indent)}}) -> {{ func.rtype }}:
     """
     {{ func.docstring|indent }}
     """
