@@ -201,6 +201,8 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
     func_doc['return'] = clean_retvalue(rtype)
     param_tags = attributelist_tag.xpath('./parmlist/parm/attributelist')
     params = []
+    if is_method:
+        params.append('self')
     if param_tags:
         for param_tag in param_tags:
             param = param_tag.xpath('./attribute[@name="name"]')[0].attrib['value']
@@ -211,10 +213,18 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
             if value_tag:
                 param += ' = ' + clean_value(value_tag[0].attrib['value'])
             params.append(param)
-    if is_method and params:
-        params[0] = 'self, ' + params[0]
-    elif is_method and not params:
-        params.append('self')
+    joined_params = ', '.join(params)
+    signature_string = 'def {name}({params}) -> {rtype}:'.format(
+        name=func_doc['name'],
+        params=joined_params,
+        rtype=rtype
+    )
+    if len(signature_string) <= 76:
+        params.clear()
+        params.append(joined_params)
+    if is_method and len(params) > 1:
+        params[0] = ', '.join(params[:2])
+        params.pop(1)
     # Rename xbmcvfs.Stat.atime, mtime and ctime methods
     if func_doc['name'] in {'atime', 'mtime', 'ctime'}:
         func_doc['name'] = 'st_' + func_doc['name']
