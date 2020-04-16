@@ -3,7 +3,8 @@ Parser for Doxygen XML docs for Kodi Python API functions and classes
 """
 import os
 import re
-from xml.sax import parseString, ContentHandler
+from xml.sax import parseString
+from xml.sax.handler import ContentHandler
 import lxml.etree as etree
 from .swigparser import parse_swig_xml
 
