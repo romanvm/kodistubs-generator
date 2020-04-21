@@ -4,9 +4,9 @@ Parser for Doxygen XML docs for Kodi Python API functions and classes
 import os
 import re
 from xml.sax import parseString
-from xml.sax.handler import ContentHandler
 import lxml.etree as etree
 from .swigparser import parse_swig_xml
+from .docstrings_parser.parser import DocstringParser
 
 MODULES = [
     'group__python__xbmc.xml',
@@ -18,136 +18,19 @@ MODULES = [
 ]
 
 CLEAN_DOCS_SUBS = [
-    (re.compile(r'````'), ''),
-    (re.compile(r'\s+?\.\.\.?'), '\n'),
-    (re.compile(r'\*\*Example:\*\*'), 'Example::'),
-    (re.compile(r'^\*\*(.+?)\*\*'), r'\1'),
-    (re.compile(r'(\S)(Example::)'), r'\1\n\n\2'),
-    (re.compile(r'^\s\s(\w)', re.M), r'\1'),
-    (re.compile(r'^\n\n'), ''),
-    (re.compile(r'(:[\w\s]+?:.+?\n)(\w)'), r'\1\n\2'),
-    (re.compile(r'(:[\w\s]+?:.+?\n\n)(:)'), r'\1\n\2'),
-    (re.compile(r'^{.+}$', re.M), ''),
-    (re.compile(r'\n\n\n+?'), '\n\n'),
+    # (re.compile(r'````'), ''),
+    # (re.compile(r'\s+?\.\.\.?'), '\n'),
+    # (re.compile(r'\*\*Example:\*\*'), 'Example::'),
+    # (re.compile(r'^\*\*(.+?)\*\*'), r'\1'),
+    # (re.compile(r'(\S)(Example::)'), r'\1\n\n\2'),
+    # (re.compile(r'^\s\s(\w)', re.M), r'\1'),
+    # (re.compile(r'^\n\n'), ''),
+    # (re.compile(r'(:[\w\s]+?:.+?\n)(\w)'), r'\1\n\2'),
+    # (re.compile(r'(:[\w\s]+?:.+?\n\n)(:)'), r'\1\n\2'),
+    # (re.compile(r'(\w)\*\*(\w)'), r'\1 **\2'),
+    (re.compile(r'^{.+}$'), ''),
+    (re.compile(r'(.)\n\n\n+?(.)'), r'\1\n\n\2'),
 ]
-
-
-class DocsHandler(ContentHandler):
-    READING_TEXT = 0
-    READING_HEADER = 1
-    READING_PARAM_NAME = 2
-    READING_PARAM_DESCR = 3
-    READING_RETURN_DESCR = 4
-    READING_TABLE = 5
-
-    def __init__(self):
-        super().__init__()
-        self._string = ''
-        self._buffer = ''
-        self._state = self.READING_TEXT
-        self._cols = None
-        self._rows = None
-        self._reading_exception = False
-
-    def as_string(self):
-        return self._string
-
-    def as_list(self):
-        return self._string.split('\n')
-
-    def startElement(self, name, attrs):
-        if name == 'heading':
-            self._state = self.READING_HEADER
-        elif name == 'bold':
-            self._string += '**'
-        elif name == 'parameterlist' and attrs.get('kind') == 'exception':
-            self._state = self._reading_exception = True
-        elif name == 'parametername':
-            self._state = self.READING_PARAM_NAME
-        elif name == 'parameterdescription':
-            self._state = self.READING_PARAM_DESCR
-        elif name == 'simplesect' and attrs.get('kind') == 'return':
-            self._state = self.READING_RETURN_DESCR
-        elif name == 'programlisting':
-            self._string += '\n\n'
-        elif name == 'codeline':
-            self._string += '    '
-        elif name == 'sp':
-            self._string += ' '
-        elif name == 'table':
-            self._state = self.READING_TABLE
-            self._cols = int(attrs.get('cols'))
-            self._rows = []
-        elif name == 'row':
-            self._rows.append([])
-        elif name == 'computeroutput':
-            self._string += ' ``'
-
-    def endElement(self, name):
-        if name == 'heading':
-            self._buffer = self._buffer.strip()
-            if not(self._buffer.startswith('{') and self._buffer.endswith('}')):
-                self._string += self._buffer
-            self._buffer = ''
-            self._state = self.READING_TEXT
-        elif name == 'bold':
-            self._string += '**'
-        elif name == 'parametername':
-            self._string += ' '
-        elif name == 'parameterdescription':
-            self._string += '\n'
-        elif name == 'parameterlist' and self._reading_exception:
-            self._reading_exception = False
-        elif name == 'simplesect' and self._state == self.READING_RETURN_DESCR:
-            self._state = self.READING_TEXT
-        elif name == 'codeline':
-            self._string += '\n'
-        elif name == 'row':
-            row_length = len(self._rows[-1])
-            if row_length < self._cols:
-                self._rows[-1] += ['' for _ in range(self._cols - row_length)]
-        elif name == 'table':
-            col_widths = []
-            for i in range(self._cols):
-                column = [row[i] for row in self._rows]
-                width = len(max(column, key=lambda item: len(item)))
-                col_widths.append(width)
-                for row in self._rows:
-                    row[i] = row[i].ljust(width)
-            t_border = ['=' * w for w in col_widths]
-            self._buffer += ' '.join(t_border) + '\n'
-            if not self._rows[0][0].isspace():
-                self._buffer += ' '.join(self._rows[0]) + '\n'
-                self._buffer += ' '.join(t_border) + '\n'
-            for row in self._rows[1:]:
-                self._buffer += ' '.join(row) + '\n'
-            self._buffer += ' '.join(t_border) + '\n'
-            self._string += '\n' + self._buffer
-            self._cols = self._rows = None
-            self._buffer = ''
-            self._state = self.READING_TEXT
-        elif name == 'computeroutput':
-            self._string += '``'
-        elif name == 'para' and self._state == self.READING_TEXT and self._string[-1:] != '\n':
-            self._string += '\n\n'
-
-    def characters(self, content):
-        content = content.replace('&apos;', '\'')
-        if content.isspace():
-            content = content.strip()
-        if self._state == self.READING_HEADER:
-            self._buffer += content
-        elif self._state == self.READING_PARAM_NAME and not self._reading_exception:
-            self._string += ':param ' + content + ':'
-        elif self._state == self.READING_PARAM_NAME and self._reading_exception:
-            self._string += ':raises ' + content + ':'
-        elif self._state == self.READING_RETURN_DESCR:
-            self._string += ':return: ' + content
-            self._state = self.READING_TEXT
-        elif self._state == self.READING_TABLE:
-            self._rows[-1].append(content)
-        else:
-            self._string += content
 
 
 def clean_docstring(docs):
@@ -163,9 +46,9 @@ def parse_description(description_tag):
     :param description_tag: etree node with function/class description
     :return: function/class description as a string
     """
-    handler = DocsHandler()
+    handler = DocstringParser()
     parseString(etree.tostring(description_tag).decode('utf-8').replace('\n', ''), handler)
-    return handler.as_string()
+    return str(handler)
 
 
 def parse_function_docs(memberdef_tag):
@@ -179,7 +62,7 @@ def parse_function_docs(memberdef_tag):
     docstring = parse_description(briefdescription)
     detaileddescription = memberdef_tag.find('detaileddescription')
     docstring += parse_description(detaileddescription)
-    return clean_docstring(docstring).rstrip('\n')
+    return clean_docstring(docstring).strip(' \n')
 
 
 def parse_xml_docs(xml_docs, docs_dir):
