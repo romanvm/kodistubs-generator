@@ -37,6 +37,12 @@ class DocstringParser(ContentHandler):
         elif name == 'table':
             columns = int(attrs['cols'])
             self._elements.append(elements.TableElement(columns))
+        elif name == 'row' and isinstance(self._elements[-1], elements.TableElement):
+            self._elements[-1].start_row()
+        elif name == 'entry' and isinstance(self._elements[-1], elements.TableElement):
+            self._elements[-1].start_cell()
+            if attrs.get('thead') == 'yes':
+                self._elements[-1].has_header = True
         elif name == 'bold':
             self._elements[-1].append('**')
         elif name == 'codeline':
@@ -49,8 +55,8 @@ class DocstringParser(ContentHandler):
         #     self._elements[-1].append('\n\n')
         elif name == 'simplesect' and attrs.get('kind') == 'return':
             self._elements.append(elements.SimplesectReturnElement())
-        elif name == 'ref' and attrs.get('kindref') == 'member':
-            self._elements[-1].append(' `')
+        elif name == 'ref' and attrs.get('kindref') in {'member', 'compound'}:
+            self._elements[-1].append('`')
 
     def endElement(self, name: str):
         if name == 'parameterlist' and self._reading_exception_block:

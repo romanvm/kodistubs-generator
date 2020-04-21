@@ -100,12 +100,16 @@ class TableElement(BaseElement):
         self._columns: int = columns
         self._table: List[List[str]] = []
         self._column_max_widths: List[int] = []
+        self.has_header = False
+
+    def start_row(self):
+        self._table.append([])
+
+    def start_cell(self):
+        self._table[-1].append('')
 
     def append(self, content: str):
-        if content:
-            if not self._table or len(self._table[-1]) >= self._columns:
-                self._table.append([])
-            self._table[-1].append(content)
+        self._table[-1][-1] += content
 
     def __iter__(self) -> Iterator[str]:
         for row in self._table:
@@ -148,7 +152,8 @@ class TableElement(BaseElement):
         self._normalize_table()
         self._calculate_max_widths()
         self._fill_columns()
-        self._insert_borders()
+        if self.has_header:
+            self._insert_borders()
         return '\n' + ''.join(self) + '\n'
 
 
