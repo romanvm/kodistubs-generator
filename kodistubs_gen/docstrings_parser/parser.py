@@ -57,6 +57,10 @@ class DocstringParser(ContentHandler):
             self._elements.append(elements.SimplesectReturnElement())
         elif name == 'ref' and attrs.get('kindref') in {'member', 'compound'}:
             self._elements[-1].append('`')
+        elif name == 'computeroutput':
+            self._elements[-1].append('``')
+        elif name == 'simplesect' and attrs.get('kind') == 'note':
+            self._elements.append(elements.NoteElement())
 
     def endElement(self, name: str):
         if name == 'parameterlist' and self._reading_exception_block:
@@ -76,6 +80,8 @@ class DocstringParser(ContentHandler):
             self._elements[-1].append('\n\n')
         elif name == 'ref':
             self._elements[-1].append('`')
+        elif name == 'computeroutput':
+            self._elements[-1].append('``')
 
     def characters(self, content: str):
         content = self._clean_content(content)

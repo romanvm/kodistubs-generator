@@ -9,27 +9,32 @@ from .swigparser import parse_swig_xml
 from .docstrings_parser.parser import DocstringParser
 
 MODULES = [
-    'group__python__xbmc.xml',
-    'group__python__xbmcaddon.xml',
+    # 'group__python__xbmc.xml',
+    # 'group__python__xbmcaddon.xml',
     'group__python__xbmcgui.xml',
-    'group__python__xbmcplugin.xml',
-    'group__python__xbmcvfs.xml',
-    'group__python__xbmcdrm.xml',
+    # 'group__python__xbmcplugin.xml',
+    # 'group__python__xbmcvfs.xml',
+    # 'group__python__xbmcdrm.xml',
 ]
 
 CLEAN_DOCS_SUBS = [
     # (re.compile(r'````'), ''),
     # (re.compile(r'\s+?\.\.\.?'), '\n'),
-    # (re.compile(r'\*\*Example:\*\*'), 'Example::'),
     # (re.compile(r'^\*\*(.+?)\*\*'), r'\1'),
     # (re.compile(r'(\S)(Example::)'), r'\1\n\n\2'),
     # (re.compile(r'^\s\s(\w)', re.M), r'\1'),
     # (re.compile(r'^\n\n'), ''),
     # (re.compile(r'(:[\w\s]+?:.+?\n)(\w)'), r'\1\n\2'),
     # (re.compile(r'(:[\w\s]+?:.+?\n\n)(:)'), r'\1\n\2'),
-    # (re.compile(r'(\w)\*\*(\w)'), r'\1 **\2'),
-    (re.compile(r'^{.+}$'), ''),
-    (re.compile(r'(.)\n\n\n+?(.)'), r'\1\n\n\2'),
+    (re.compile(r'\*\*Example:\*\*'), 'Example::'),
+    (re.compile(r'(\n:(?:param|return|raises).+?)\n(\w)'), '\\1\n\n\\2'),
+    (re.compile(r'^\s\sAdded'), 'Added'),
+    (re.compile(r'([\w,])(\*\*[^*]+?\*\*)'), r'\1 \2'),
+    (re.compile(r'``\*\*|\*\*``'), '``'),
+    (re.compile(r'\*\*"|"\*\*'), '``'),
+    (re.compile(r'^{\s.+?\s}$', re.M), ''),
+    (re.compile(r'(\w)(`?`\w+?`?)'), r'\1 \2'),
+    (re.compile(r'(.)\n\n\n+?(.)'), '\\1\n\n\\2'),
 ]
 
 

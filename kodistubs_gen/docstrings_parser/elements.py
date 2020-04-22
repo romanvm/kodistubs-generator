@@ -42,7 +42,9 @@ class BaseTextElement(BaseElement):
 
 
 class TextElement(BaseTextElement):
-    pass
+
+    def as_string(self) -> str:
+        return fill(self._string)
 
 
 class HeadingElement(BaseTextElement):
@@ -58,19 +60,9 @@ class HeadingElement(BaseTextElement):
 
 class ParaElement(BaseTextElement):
 
-    REPLACEMENTS = (
-        ('**Example:**', '**Example**::'),
-    )
-
-    def _clean_text(self, text: str) -> str:
-        for repl in self.REPLACEMENTS:
-            text = text.replace(repl[0], repl[1])
-        return text
-
     def as_string(self) -> str:
         if self._string:
-            string = self._clean_text(self._string)
-            return fill(string, 80) + '\n\n'
+            return fill(self._string, 80) + '\n\n'
         return ''
 
 
@@ -78,12 +70,13 @@ class ParameternameElement(BaseTextElement):
 
     def __init__(self, is_exception: bool = False):
         super().__init__()
-        self._is_exception = is_exception
+        if is_exception:
+            self._prefix = 'raises'
+        else:
+            self._prefix = 'param'
 
     def as_string(self) -> str:
-        if self._is_exception:
-            return f':raises: {self._string} '
-        return f':param {self._string}:'
+        return f':{self._prefix} {self._string}: '
 
 
 class ParameterdescriptionElement(BaseTextElement):
@@ -109,7 +102,8 @@ class TableElement(BaseElement):
         self._table[-1].append('')
 
     def append(self, content: str):
-        self._table[-1][-1] += content
+        if self._table and self._table[-1]:
+            self._table[-1][-1] += content
 
     def __iter__(self) -> Iterator[str]:
         for row in self._table:
@@ -154,7 +148,7 @@ class TableElement(BaseElement):
         self._fill_columns()
         if self.has_header:
             self._insert_borders()
-        return '\n' + ''.join(self) + '\n'
+        return '\n\n' + ''.join(self) + '\n'
 
 
 class CodelineElement(BaseTextElement):
@@ -169,3 +163,9 @@ class SimplesectReturnElement(BaseTextElement):
 
     def as_string(self) -> str:
         return f':return: {self._string}\n\n'
+
+
+class NoteElement(BaseTextElement):
+    def as_string(self) -> str:
+        text = fill(self._string, initial_indent='    ', subsequent_indent='    ')
+        return f'\n\n.. note::\n{text}\n\n'
