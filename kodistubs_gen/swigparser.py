@@ -214,11 +214,7 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
                 param += ' = ' + clean_value(value_tag[0].attrib['value'])
             params.append(param)
     joined_params = ', '.join(params)
-    signature_string = 'def {name}({params}) -> {rtype}:'.format(
-        name=func_doc['name'],
-        params=joined_params,
-        rtype=rtype
-    )
+    signature_string = f'def {func_doc["name"]}({joined_params}) -> {rtype}:'
     if len(signature_string) <= 76:
         params.clear()
         params.append(joined_params)
@@ -252,42 +248,35 @@ def parse_swig_xml(module_docs, swig_dir):
     for const_tag in const_tags:
         constants.append(const_tag.attrib['value'] + ' = 0')
     module_docs['constants'] = constants
-    for func_doc in module_docs['functions']:
-        attributelist_tag = root_tag.xpath(
-            '//cdecl/attributelist/attribute[@value="{0}"]/..'.format(
-                func_doc['name']
-            )
-        )[0]
+    for func_doc in module_docs['functions'][:]:
+        try:
+            attributelist_tag = root_tag.xpath(f'//cdecl/attributelist/attribute[@value="{func_doc["name"]}"]/..')[0]
+        except IndexError:
+            print(f'{func_doc["name"]} not found in {SWIG_XML[module_docs["name"]]}')
+            module_docs['functions'].remove(func_doc)
+            continue
         parse_function(func_doc, attributelist_tag)
     for class_doc in module_docs['classes'][:]:
         try:
             class_attrib_list_tag = root_tag.xpath(
-                '//class/attributelist/attribute[@value="{0}"]/..'.format(
-                    class_doc['name']
-                )
-            )[0]
+                f'//class/attributelist/attribute[@value="{class_doc["name"]}"]/..')[0]
         except IndexError:
+            print(f'{class_doc["name"]} not found in {SWIG_XML[module_docs["name"]]}')
             module_docs['classes'].remove(class_doc)
             continue
         base_class_tag = class_attrib_list_tag.xpath('./baselist/base')[0]
         class_doc['base_class'] = clean_base_class(base_class_tag.attrib['name'])
         for meth_doc in class_doc['functions'][:]:
             attributelist_tag = root_tag.xpath(
-                '//class/attributelist/attribute[@name="sym_name" and @value="{0}"]'
-                '/../../cdecl/attributelist/attribute[@value="{1}"]/..'.format(
-                    class_doc['name'],
-                    meth_doc['name']
-                )
-            )
+                f'//class/attributelist/attribute[@name="sym_name" and @value="{class_doc["name"]}"]'
+                f'/../../cdecl/attributelist/attribute[@value="{meth_doc["name"]}"]/..')
             try:
                 parse_function(meth_doc, attributelist_tag[0], True)
             except IndexError:
                 class_doc['functions'].remove(meth_doc)
                 continue
         constructor_tag = root_tag.xpath(
-            '//constructor/attributelist/attribute[@value="{0}"]/..'.format(
-                class_doc['name']
-            )
+            f'//constructor/attributelist/attribute[@value="{class_doc["name"]}"]/..'
         )
         if constructor_tag:
             init_doc = {'name': '__init__', 'docstring': ''}

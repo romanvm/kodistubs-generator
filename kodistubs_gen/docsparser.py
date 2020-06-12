@@ -9,12 +9,12 @@ from .swigparser import parse_swig_xml
 from .docstrings_parser.parser import DocstringParser
 
 MODULES = [
-    # 'group__python__xbmc.xml',
-    # 'group__python__xbmcaddon.xml',
+    'group__python__xbmc.xml',
+    'group__python__xbmcaddon.xml',
     'group__python__xbmcgui.xml',
-    # 'group__python__xbmcplugin.xml',
-    # 'group__python__xbmcvfs.xml',
-    # 'group__python__xbmcdrm.xml',
+    'group__python__xbmcplugin.xml',
+    'group__python__xbmcvfs.xml',
+    'group__python__xbmcdrm.xml',
 ]
 
 CLEAN_DOCS_SUBS = [
