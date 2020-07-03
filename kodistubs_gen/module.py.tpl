@@ -5,7 +5,7 @@
 """
 {{ module.docstring|wordwrap }}
 """
-from typing import Union, List, Dict, Tuple
+from typing import Union, List, Dict, Tuple, Optional
 
 __kodistubs__ = True
 

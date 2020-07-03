@@ -208,10 +208,16 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
             param = param_tag.xpath('./attribute[@name="name"]')[0].attrib['value']
             param_type = param_tag.xpath('./attribute[@name="type"]')[0].attrib['value']
             param_type = clean_type(param_type).strip()
-            param += ': ' + param_type
             value_tag = param_tag.xpath('./attribute[@name="value"]')
             if value_tag:
-                param += ' = ' + clean_value(value_tag[0].attrib['value'])
+                param_value = clean_value(value_tag[0].attrib['value'])
+            else:
+                param_value = None
+            if param_value == 'None':
+                param_type = f'Optional[{param_type}]'
+            param += ': ' + param_type
+            if param_value is not None:
+                param += ' = ' + param_value
             params.append(param)
     joined_params = ', '.join(params)
     signature_string = f'def {func_doc["name"]}({joined_params}) -> {rtype}:'
