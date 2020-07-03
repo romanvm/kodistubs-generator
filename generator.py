@@ -49,7 +49,6 @@ def main():
         create_doxyfile(src_dir)
         generate_doxy_docs()
     template_py = jinja_env.get_template('module.py.tpl')
-    template_rst = jinja_env.get_template('module.rst.tpl')
     module_docs = parse(docs_dir, swig_dir)
     for mod in module_docs:
         print(f'Writing {mod["__name__"]}...')
@@ -59,13 +58,6 @@ def main():
         with open(os.path.join(build_dir, mod['__name__'] + '.py'), 'w',
                   encoding='utf-8') as fo:
             fo.write(module_py)
-        module_rst = template_rst.render(
-            module=mod,
-            underline='=' * len(mod['__name__'])
-        )
-        with open(os.path.join(build_dir, mod['__name__'] + '.rst'), 'w',
-                  encoding='utf-8') as fo:
-            fo.write(module_rst)
     print('Done')
 
 
