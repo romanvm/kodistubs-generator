@@ -20,15 +20,6 @@ class BaseElement(ABC):
         return f'[{self.__class__.__name__}]<"{str(self)}>"'
 
 
-# class DummyElement(BaseElement):
-#
-#     def append(self, content: str):
-#         pass
-#
-#     def as_string(self) -> str:
-#         return ''
-
-
 class BaseTextElement(BaseElement):
 
     def __init__(self):
@@ -166,6 +157,7 @@ class SimplesectReturnElement(BaseTextElement):
 
 
 class NoteElement(BaseTextElement):
+
     def as_string(self) -> str:
         text = fill(self._string, initial_indent='    ', subsequent_indent='    ')
         return f'\n\n.. note::\n{text}\n\n'
