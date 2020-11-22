@@ -1,4 +1,3 @@
-# coding: utf-8
 # This file is generated from Kodi source code and post-edited
 # to correct code style and docstrings formatting.
 # License: GPL v.3 <https://www.gnu.org/licenses/gpl-3.0.en.html>
