@@ -10,10 +10,10 @@ import json
 import os
 from subprocess import run
 from jinja2 import Environment, FileSystemLoader
-from kodistubs_gen.docsparser import parse
+from kodistubs_generator.docsparser import parse
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-template_dir = os.path.join(base_dir, 'kodistubs_gen')
+template_dir = os.path.join(base_dir, 'kodistubs_generator')
 build_dir = os.path.join(base_dir, 'build')
 docs_dir = os.path.join(build_dir, 'kodi-docs')
 doxy_path = os.path.join(build_dir, 'kodi.doxy')
