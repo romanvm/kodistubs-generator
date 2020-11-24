@@ -61,10 +61,7 @@ class ParameternameElement(BaseTextElement):
 
     def __init__(self, is_exception: bool = False):
         super().__init__()
-        if is_exception:
-            self._prefix = 'raises'
-        else:
-            self._prefix = 'param'
+        self._prefix = 'raises' if is_exception else 'param'
 
     def as_string(self) -> str:
         return f':{self._prefix} {self._string}: '
