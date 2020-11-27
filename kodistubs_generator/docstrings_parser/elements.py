@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from textwrap import fill
 from typing import List, Iterator
@@ -21,6 +22,10 @@ class BaseElement(ABC):
 
 
 class BaseTextElement(BaseElement):
+    IGNORE_REGEXPS = [
+        re.compile(r'^{[^}]+}]'),
+        re.compile(r'^\\python_[^{]+{[^}]+}'),
+    ]
 
     def __init__(self):
         self._string: str = ''
@@ -29,31 +34,37 @@ class BaseTextElement(BaseElement):
         self._string += content
 
     def as_string(self) -> str:
-        return self._string
+        string = self._string.strip()
+        for regexp in self.IGNORE_REGEXPS:
+            if regexp.search(string) is not None:
+                return ''
+        return string
 
 
 class TextElement(BaseTextElement):
 
     def as_string(self) -> str:
-        return fill(self._string)
+        string = super().as_string()
+        if string:
+            return fill(string)
+        return ''
 
 
 class HeadingElement(BaseTextElement):
 
     def as_string(self) -> str:
-        string = self._string.strip()
-        if string.startswith('{') and string.endswith('}'):
-            string = ''
+        string = super().as_string()
         if string:
-            string += fill(string) + '\n\n'
-        return string
+            return fill(string) + '\n\n'
+        return ''
 
 
 class ParaElement(BaseTextElement):
 
     def as_string(self) -> str:
-        if self._string:
-            return fill(self._string, 80) + '\n\n'
+        string = super().as_string()
+        if string:
+            return fill(string, 80) + '\n\n'
         return ''
 
 
@@ -64,14 +75,16 @@ class ParameternameElement(BaseTextElement):
         self._prefix = 'raises' if is_exception else 'param'
 
     def as_string(self) -> str:
-        return f':{self._prefix} {self._string}: '
+        string = super().as_string()
+        return f':{self._prefix} {string}: '
 
 
 class ParameterdescriptionElement(BaseTextElement):
 
     def as_string(self) -> str:
-        if self._string:
-            return fill(self._string, subsequent_indent='    ') + '\n'
+        string = super().as_string()
+        if string:
+            return fill(string, subsequent_indent='    ') + '\n'
         return ''
 
 
@@ -142,19 +155,22 @@ class TableElement(BaseElement):
 class CodelineElement(BaseTextElement):
 
     def as_string(self) -> str:
-        if self._string:
-            return '    ' + self._string + '\n'
+        string = super().as_string()
+        if string:
+            return '    ' + string + '\n'
         return '    \n'
 
 
 class SimplesectReturnElement(BaseTextElement):
 
     def as_string(self) -> str:
-        return f':return: {self._string}\n\n'
+        string = super().as_string()
+        return f':return: {string}\n\n'
 
 
 class NoteElement(BaseTextElement):
 
     def as_string(self) -> str:
-        text = fill(self._string, initial_indent='    ', subsequent_indent='    ')
+        string = super().as_string()
+        text = fill(string, initial_indent='    ', subsequent_indent='    ')
         return f'\n\n.. note::\n{text}\n\n'
