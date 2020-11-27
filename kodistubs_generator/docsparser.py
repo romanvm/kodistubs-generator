@@ -19,6 +19,7 @@ MODULES = [
 
 CLEAN_DOCS_SUBS = [
     (re.compile(r'\*\*Example:\*\*'), 'Example::'),
+    (re.compile(r'\.Example::'), '.\n\nExample::'),
     (re.compile(r'(\n:(?:param|return|raises).+?)\n(\w)'), '\\1\n\n\\2'),
     (re.compile(r'^\s\sAdded'), 'Added'),
     (re.compile(r'([\w,])(\*\*[^*]+?\*\*)'), r'\1 \2'),
