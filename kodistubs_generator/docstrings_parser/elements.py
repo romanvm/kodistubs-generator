@@ -22,9 +22,9 @@ class BaseElement(ABC):
 
 
 class BaseTextElement(BaseElement):
-    IGNORE_REGEXPS = [
-        re.compile(r'^{[^}]+}]'),
-        re.compile(r'^\\python_[^{]+{[^}]+}'),
+    STRIP_REGEXPS = [
+        re.compile(r'^({[^}]+}])'),
+        re.compile(r'^(\\python_[^{]+{[^}]+})'),
     ]
 
     def __init__(self):
@@ -35,9 +35,8 @@ class BaseTextElement(BaseElement):
 
     def as_string(self) -> str:
         string = self._string.strip()
-        for regexp in self.IGNORE_REGEXPS:
-            if regexp.search(string) is not None:
-                return ''
+        for regexp in self.STRIP_REGEXPS:
+            string = regexp.sub('', string).strip()
         return string
 
 
