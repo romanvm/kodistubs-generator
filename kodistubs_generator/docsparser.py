@@ -4,9 +4,11 @@ Parser for Doxygen XML docs for Kodi Python API functions and classes
 import os
 import re
 from xml.sax import parseString
+
 import lxml.etree as etree
-from .swigparser import parse_swig_xml
+
 from .docstrings_parser.parser import DocstringParser
+from .swigparser import parse_swig_xml
 
 MODULES = [
     'group__python__xbmc.xml',

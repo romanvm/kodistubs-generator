@@ -3,8 +3,8 @@ Parser for SWIG-generated XML definitions of Kodi Python API modules
 """
 import os
 import re
-import lxml.etree as etree
 
+import lxml.etree as etree
 
 SWIG_XML = {
     'Library - xbmc': 'AddonModuleXbmc.i.xml',

@@ -9,7 +9,9 @@ import argparse
 import json
 import os
 from subprocess import run
+
 from jinja2 import Environment, FileSystemLoader
+
 from kodistubs_generator.docsparser import parse
 
 base_dir = os.path.dirname(os.path.abspath(__file__))

@@ -5,6 +5,7 @@ Parse doxygen object descriptions into ReStructuredText docstrings
 
 from typing import List
 from xml.sax.handler import ContentHandler
+
 from . import elements
 
 
