@@ -151,7 +151,12 @@ def parse(docs_dir, swig_dir):
     for module in MODULES:
         module_xml = os.path.join(docs_dir, 'xml', module)
         module_docs = parse_xml_docs(module_xml, docs_dir)
-        if module_docs['name'] in ('Addon', 'CryptoSession'):
+        if module_docs['name'] == 'Addon':
+            module_docs_copy = module_docs.copy()
+            module_docs_copy['classes'] = []
+            module_docs['classes'].insert(0, module_docs_copy)
+            module_docs['functions'] = []
+        elif module_docs['name'] == 'CryptoSession':
             module_docs['classes'] = [module_docs.copy()]
             module_docs['functions'] = []
         else:

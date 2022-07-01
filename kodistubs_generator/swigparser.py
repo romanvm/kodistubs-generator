@@ -20,21 +20,36 @@ DECL_TYPE_SUBS = [
     (re.compile(r'r\.q\(const\)\.XBMCAddon::xbmcgui::InfoLabelDict'), 'Dict[str, str]'),
     (re.compile(r'r\.q\(const\)\.XBMCAddon::Properties'), 'Dict[str, str]'),
     (re.compile(r'r\.q\(const\)\.std::vector<\(XBMCAddon::Properties\)>'), 'List[Dict[str, str]]'),
-    (re.compile(r'r\.q\(const\)\.std::vector<\(Tuple<\(XBMCAddon::String,p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem,bool\)>\)>'), 'List[Tuple[str, ListItem, bool]]'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(Tuple<\(XBMCAddon::String,p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem,bool\)>\)>'),
+        'List[Tuple[str, ListItem, bool]]'),
     (re.compile(r'r\.q\(const\)\.std::vector<\(Tuple<\(XBMCAddon::String,XBMCAddon::String\)>\)>'), 'List[Tuple[str, str]]'),
-    (re.compile(r'r\.q\(const\).std::vector<\(Alternative<\(XBMCAddon::String,p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem\)>\)>'), 'List[Union[str, ListItem]]'),
-    (re.compile(r'r\.q\(const\)\.Alternative<\(XBMCAddon::String,p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem\)>'), 'Union[str, ListItem]'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(Alternative<\(XBMCAddon::String,p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem\)>\)>'),
+        'List[Union[str, ListItem]]'),
+    (re.compile(r'r\.q\(const\)\.std::map<\(XBMCAddon::String,Tuple<\(float,int\)>\)>'), 'Dict[str, Tuple[float,int]]'),
+    (re.compile(r'r\.q\(const\)\.Alternative<\(XBMCAddon::String,p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem\)>'),
+        'Union[str, ListItem]'),
     (re.compile(r'r\.q\(const\)\.Alternative<\(XBMCAddon::String,p\.q\(const\)\.ListItem\)>'), 'Union[str, ListItem]'),
     (re.compile(r'r\.q\(const\)\.std::vector<\(XBMCAddon::String\)>'), 'List[str]'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(p\.q\(const\)\.XBMCAddon::xbmc::Actor\)>'), 'List[Actor]'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(Tuple<\(int,std::string\)>\)>'), 'List[Tuple[int, str]]'),
     (re.compile(r'r\.q\(const\)\.std::vector<\(int\)>'), 'List[int]'),
     (re.compile(r'r\.q\(const\)\.std::map<\(XBMCAddon::String,XBMCAddon::String\)>'), 'Dict[str, str]'),
     (re.compile(r'std::vector<\(p.XBMCAddon::xbmcgui::Control\)>'), 'List[Control]'),
+    (re.compile(r'std::vector<\(XBMCAddon::String\)>'), 'List[str]'),
     (re.compile(r'p\.q\(const\)\.XBMCAddon::xbmcgui::Control'), 'Control'),
+    (re.compile(r'p\.q\(const\)\.XBMCAddon::xbmc::VideoStreamDetail'), 'VideoStreamDetail'),
+    (re.compile(r'p\.q\(const\)\.XBMCAddon::xbmc::AudioStreamDetail'), 'AudioStreamDetail'),
+    (re.compile(r'p\.q\(const\)\.XBMCAddon::xbmc::SubtitleStreamDetail'), 'SubtitleStreamDetail'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(p\.q\(const\)\.XBMCAddon::xbmcgui::ListItem\)>'), 'List[ListItem]'),
     (re.compile(r'p\.XBMCAddon::xbmcgui::Control'), 'Control'),
+    (re.compile(r'p\.XBMCAddon::xbmc::Actor'), 'Actor'),
     (re.compile(r'r?\.?q\(const\)\.XBMCAddon::String'), 'str'),
     (re.compile(r'p\.XBMCAddon::xbmcgui::Action'), 'Action'),
     (re.compile(r'XBMCAddon::String'), 'str'),
     (re.compile(r'r?\.?q\(const\)\.String'), 'str'),
+    (re.compile(r'r\.q\(const\)\.std::string'), 'str'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(bool\)>'), 'List[bool]'),
+    (re.compile(r'r\.q\(const\)\.std::vector<\(double\)>'), 'List[float]'),
     (re.compile(r'String'), 'str'),
     (re.compile(r'std::string'), 'str'),
     (re.compile(r'p\.q\(const\)\.XBMCAddon::xbmcgui::ListItemList'), 'List[ListItem]'),
@@ -63,11 +78,14 @@ RET_TYPE_SUBS = [
     (re.compile(r'unsigned int'), 'int'),
     (re.compile(r'xbmc::InfoTagVideo'), 'InfoTagVideo'),
     (re.compile(r'xbmc::InfoTagMusic'), 'InfoTagMusic'),
+    (re.compile(r'xbmc::InfoTagPicture'), 'InfoTagPicture'),
+    (re.compile(r'xbmc::InfoTagGame'), 'InfoTagGame'),
     (re.compile(r'XBMCAddon::xbmcgui::ListItem'), 'ListItem'),
     (re.compile(r'XBMCAddon::xbmcgui::Control'), 'Control'),
     (re.compile(r'std::unique_ptr<\(std::vector<\(int\)>\)>'), 'List[int]'),
     (re.compile(r'Alternative<\(XBMCAddon::String,std::vector<\(XBMCAddon::String\)>\)>'), 'Union[str, List[str]]'),
     (re.compile(r'std::vector<\(std::string\)>'), 'List[str]'),
+    (re.compile(r'p\.XBMCAddon::xbmc::Actor'), 'Actor'),
     (re.compile(r'XBMCAddon::String'), 'str'),
     (re.compile(r'std::vector'), 'List'),
     (re.compile(r'q\(const\)\.char'), 'str'),
@@ -91,6 +109,9 @@ VALUE_SUBS = [
     (re.compile(r'NULL'), 'None'),
     (re.compile(r'XBMCAddon::xbmcgui::INPUT_ALPHANUM'), 'INPUT_ALPHANUM'),
     (re.compile(r'SEEK_SET'), '0'),
+    (re.compile(r'CONTROL_NO_BUTTON'), 'DLG_YESNO_NO_BTN'),
+    (re.compile(r'std::vector< XBMCAddon::xbmcgui::ListItem const \* >\(\)'), '()'),
+    (re.compile(r'INT_MAX'), '2147483647'),
 ]
 
 RET_VALUE_SUBS = {
@@ -110,8 +131,15 @@ RET_VALUE_SUBS = {
     'unicode': 'return ""',
     'InfoTagVideo': 'return InfoTagVideo()',
     'InfoTagMusic': 'return InfoTagMusic()',
+    'InfoTagPicture': 'return InfoTagPicture()',
     'InfoTagRadioRDS': 'return InfoTagRadioRDS()',
+    'InfoTagGame': 'return InfoTagGame()',
+    'List[Actor]': 'return [Actor()]',
     'bytearray': 'return bytearray()',
+    'Union[str,  List[str]]': 'return ""',
+    'Settings': 'return Settings()',
+    'List[bool]': 'return [True]',
+    'List[float]': 'return [0.0]'
 }
 
 
@@ -119,6 +147,8 @@ BASE_CLASS_SUBS = [
     ('AddonClass', ''),
     ('AddonCallback', ''),
 ]
+
+DECL = set()
 
 
 def clean_type(decl):
