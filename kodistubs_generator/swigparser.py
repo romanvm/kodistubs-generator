@@ -67,7 +67,7 @@ DECL_TYPE_SUBS = [
     (re.compile('unsigned int'), 'int'),
     (re.compile(r'p\.q\(const\)\.char'), 'str'),
     (re.compile(r'q\(const\)\.'), ''),
-    (re.compile(r','), ', '),
+    (re.compile(r',(\S)'), r', \1'),
 ]
 
 RET_TYPE_SUBS = [
@@ -92,7 +92,7 @@ RET_TYPE_SUBS = [
     (re.compile(r'XbmcCommons::Buffer'), 'bytearray'),
     (re.compile(r'<\('), '['),
     (re.compile(r'\)>'), ']'),
-    (re.compile(r','), ', '),
+    (re.compile(r',(\S)'), r', \1'),
 ]
 
 VALUE_SUBS = [
