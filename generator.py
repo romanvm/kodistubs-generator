@@ -1,7 +1,7 @@
 # (c) 2018, Roman Miroshnychenko <roman1972@gmail.com>
 # License: GPL v.3
 """
-Script for semi-autoamated generation of
+Script for semi-automated generation of
 `Kodistubs <https://github.com/romanvm/Kodistubs>`_ from Kodi source files.
 """
 
@@ -47,6 +47,8 @@ def main():
     args = parse_arguments()
     src_dir = os.path.join(args.kodi_src, 'xbmc', 'interfaces', 'legacy')
     swig_dir = os.path.join(args.kodi_src, 'build', 'swig')
+    if not os.path.exists(swig_dir):
+        swig_dir = os.path.join(args.kodi_src, 'build', 'build', 'swig')
     if args.overwrite or not os.path.exists(os.path.join(docs_dir, 'xml')):
         create_doxyfile(src_dir)
         generate_doxy_docs()
