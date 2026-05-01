@@ -218,3 +218,4 @@ webpack-stats.json
 *.sqlite*
 temp/
 tmp/
+test_*.py
