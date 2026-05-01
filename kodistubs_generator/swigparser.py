@@ -1,7 +1,6 @@
 """
 Parser for SWIG-generated XML definitions of Kodi Python API modules
 """
-import os
 import re
 
 import lxml.etree as etree
@@ -274,7 +273,7 @@ def parse_swig_xml(module_docs, swig_dir):
     :param swig_dir: directory where SWIG XML definitions are located
     :return:
     """
-    swig_xml = os.path.join(swig_dir, SWIG_XML[module_docs['name']])
+    swig_xml = swig_dir / SWIG_XML[module_docs['name']]
     root_tag = etree.parse(swig_xml)
     module_docs['__name__'] = root_tag.xpath(
         '/top/attributelist/attribute[@name="name"]'

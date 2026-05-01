@@ -1,7 +1,6 @@
 """
 Parser for Doxygen XML docs for Kodi Python API functions and classes
 """
-import os
 import re
 from xml.sax import parseString
 
@@ -100,7 +99,7 @@ def parse_xml_docs(xml_docs, docs_dir):
     for innergroup_tag in compounddef_tag.findall('innergroup'):
         class_xml_name = innergroup_tag.attrib['refid']
         innergroup_xml_docs = parse_xml_docs(
-            os.path.join(docs_dir, 'xml', class_xml_name + '.xml'),
+            docs_dir / 'xml' / (class_xml_name + '.xml'),
             docs_dir
         )
         if (name in (
@@ -149,7 +148,7 @@ def parse(docs_dir, swig_dir):
     """
     docs = []
     for module in MODULES:
-        module_xml = os.path.join(docs_dir, 'xml', module)
+        module_xml = docs_dir / 'xml' / module
         module_docs = parse_xml_docs(module_xml, docs_dir)
         if module_docs['name'] == 'Addon':
             module_docs_copy = module_docs.copy()

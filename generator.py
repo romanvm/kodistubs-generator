@@ -7,18 +7,18 @@ Script for semi-automated generation of
 
 import argparse
 import json
-import os
+from pathlib import Path
 from subprocess import run
 
 from jinja2 import Environment, FileSystemLoader
 
 from kodistubs_generator.docsparser import parse
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
-template_dir = os.path.join(base_dir, 'kodistubs_generator')
-build_dir = os.path.join(base_dir, 'build')
-docs_dir = os.path.join(build_dir, 'kodi-docs')
-doxy_path = os.path.join(build_dir, 'kodi.doxy')
+base_dir = Path(__file__).resolve().parent
+template_dir = base_dir / 'kodistubs_generator'
+build_dir = base_dir / 'build'
+docs_dir = build_dir / 'kodi-docs'
+doxy_path = build_dir / 'kodi.doxy'
 jinja_env = Environment(loader=FileSystemLoader(template_dir))
 
 
@@ -32,34 +32,35 @@ def parse_arguments():
 
 def create_doxyfile(src_dir):
     kodi_doxy = jinja_env.get_template('kodi.doxy.tpl')
-    with open(doxy_path, 'w', encoding='utf-8') as fo:
+    with doxy_path.open('w', encoding='utf-8') as fo:
         fo.write(kodi_doxy.render(src_dir=src_dir, out_dir=docs_dir))
 
 
 def generate_doxy_docs():
-    run(['doxygen', doxy_path])
+    run(['doxygen', str(doxy_path)])
 
 
 def main():
     print('Generating Kodistubs...')
-    if not os.path.exists(build_dir):
-        os.mkdir(build_dir)
+    if not build_dir.exists():
+        build_dir.mkdir()
     args = parse_arguments()
-    src_dir = os.path.join(args.kodi_src, 'xbmc', 'interfaces', 'legacy')
-    swig_dir = os.path.join(args.kodi_src, 'build', 'swig')
-    if not os.path.exists(swig_dir):
-        swig_dir = os.path.join(args.kodi_src, 'build', 'build', 'swig')
-    if args.overwrite or not os.path.exists(os.path.join(docs_dir, 'xml')):
+    kodi_src = Path(args.kodi_src)
+    src_dir = kodi_src / 'xbmc' / 'interfaces' / 'legacy'
+    swig_dir = kodi_src / 'build' / 'swig'
+    if not swig_dir.exists():
+        swig_dir = kodi_src / 'build' / 'build' / 'swig'
+    if args.overwrite or not (docs_dir / 'xml').exists():
         create_doxyfile(src_dir)
         generate_doxy_docs()
     template_py = jinja_env.get_template('module.py.tpl')
     module_docs = parse(docs_dir, swig_dir)
     for mod in module_docs:
         print(f'Writing {mod["__name__"]}...')
-        with open(os.path.join(build_dir, mod['__name__'] + '.json'), 'w') as fo:
+        with (build_dir / (mod['__name__'] + '.json')).open('w') as fo:
             json.dump(mod, fo, indent=2)
         module_py = template_py.render(module=mod)
-        with open(os.path.join(build_dir, mod['__name__'] + '.py'), 'w',
+        with (build_dir / (mod['__name__'] + '.py')).open('w',
                   encoding='utf-8') as fo:
             fo.write(module_py)
     print('Done')
