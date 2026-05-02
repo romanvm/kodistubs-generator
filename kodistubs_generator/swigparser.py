@@ -67,6 +67,8 @@ DECL_TYPE_SUBS = [
     (re.compile(r'p\.q\(const\)\.char'), 'str'),
     (re.compile(r'q\(const\)\.'), ''),
     (re.compile(r',(\S)'), r', \1'),
+    (re.compile(r'r\.std::map<\(str, str, std::less<\(\)>\)>'), 'Dict[str, str]'),
+    (re.compile(r'r\.std::vector<\(Tuple<\(int, str, str\)>\)>'), 'Tuple[int, str, str]'),
 ]
 
 RET_TYPE_SUBS = [
