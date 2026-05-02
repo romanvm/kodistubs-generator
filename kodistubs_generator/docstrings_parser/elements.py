@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from textwrap import fill
 from typing import List, Iterator
 
+LINE_LENGTH = 90
+
 
 class BaseElement(ABC):
 
@@ -45,7 +47,7 @@ class TextElement(BaseTextElement):
     def as_string(self) -> str:
         string = super().as_string()
         if string:
-            return fill(string)
+            return fill(string, LINE_LENGTH)
         return ''
 
 
@@ -54,7 +56,7 @@ class HeadingElement(BaseTextElement):
     def as_string(self) -> str:
         string = super().as_string()
         if string:
-            return fill(string) + '\n\n'
+            return fill(string, LINE_LENGTH) + '\n\n'
         return ''
 
 
@@ -63,7 +65,7 @@ class ParaElement(BaseTextElement):
     def as_string(self) -> str:
         string = super().as_string()
         if string:
-            return fill(string, 80) + '\n\n'
+            return fill(string, LINE_LENGTH + 10) + '\n\n'
         return ''
 
 
@@ -83,7 +85,7 @@ class ParameterdescriptionElement(BaseTextElement):
     def as_string(self) -> str:
         string = super().as_string()
         if string:
-            return fill(string, subsequent_indent='    ') + '\n'
+            return fill(string, LINE_LENGTH, subsequent_indent='    ') + '\n'
         return ''
 
 
@@ -171,5 +173,5 @@ class NoteElement(BaseTextElement):
 
     def as_string(self) -> str:
         string = super().as_string()
-        text = fill(string, initial_indent='    ', subsequent_indent='    ')
+        text = fill(string, LINE_LENGTH, initial_indent='    ', subsequent_indent='    ')
         return f'\n\n.. note::\n{text}\n\n'
