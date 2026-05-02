@@ -129,7 +129,6 @@ RET_VALUE_SUBS = {
     'long': 'return 0',
     'float': 'return 0.0',
     'bool': 'return True',
-    'unicode': 'return ""',
     'InfoTagVideo': 'return InfoTagVideo()',
     'InfoTagMusic': 'return InfoTagMusic()',
     'InfoTagPicture': 'return InfoTagPicture()',
