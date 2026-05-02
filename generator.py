@@ -17,6 +17,8 @@ from kodistubs_generator.docsparser import parse
 base_dir = Path(__file__).resolve().parent
 template_dir = base_dir / 'kodistubs_generator'
 build_dir = base_dir / 'build'
+kodistubs_dir = build_dir / 'Kodistubs'
+json_dir = build_dir / 'json'
 docs_dir = build_dir / 'kodi-docs'
 doxy_path = build_dir / 'kodi.doxy'
 jinja_env = Environment(loader=FileSystemLoader(template_dir))
@@ -44,6 +46,8 @@ def main():
     print('Generating Kodistubs...')
     if not build_dir.exists():
         build_dir.mkdir()
+        kodistubs_dir.mkdir()
+        json_dir.mkdir()
     args = parse_arguments()
     kodi_src = Path(args.kodi_src)
     src_dir = kodi_src / 'xbmc' / 'interfaces' / 'legacy'
@@ -57,10 +61,10 @@ def main():
     module_docs = parse(docs_dir, swig_dir)
     for mod in module_docs:
         print(f'Writing {mod["__name__"]}...')
-        with (build_dir / (mod['__name__'] + '.json')).open('w') as fo:
+        with (json_dir / (mod['__name__'] + '.json')).open('w') as fo:
             json.dump(mod, fo, indent=2)
         module_py = template_py.render(module=mod)
-        with (build_dir / (mod['__name__'] + '.py')).open('w',
+        with (kodistubs_dir / (mod['__name__'] + '.py')).open('w',
                   encoding='utf-8') as fo:
             fo.write(module_py)
     print('Done')

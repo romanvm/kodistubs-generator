@@ -5,6 +5,8 @@ import re
 
 import lxml.etree as etree
 
+from .docstrings_parser.elements import LINE_LENGTH
+
 SWIG_XML = {
     'Library - xbmc': 'AddonModuleXbmc.i.xml',
     'Addon': 'AddonModuleXbmcaddon.i.xml',
@@ -251,7 +253,7 @@ def parse_function(func_doc, attributelist_tag, is_method=False):
             params.append(param)
     joined_params = ', '.join(params)
     signature_string = f'def {func_doc["name"]}({joined_params}) -> {rtype}:'
-    if len(signature_string) <= 76:
+    if len(signature_string) <= LINE_LENGTH - 4:
         params.clear()
         params.append(joined_params)
     if is_method and len(params) > 1:
