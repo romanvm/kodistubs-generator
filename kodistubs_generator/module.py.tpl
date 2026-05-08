@@ -4,7 +4,8 @@
 """
 {{ module.docstring|wordwrap }}
 """
-from typing import Union, List, Dict, Tuple, Optional
+from __future__ import annotations
+from typing import TYPE_CHECKING, Union, List, Dict, Tuple, Optional
 
 __kodistubs__ = True
 
