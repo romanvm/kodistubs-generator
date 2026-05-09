@@ -1,5 +1,8 @@
 # Kodistubs Generator
 
+**NOTE: This project is closed and archived. The new generation script and AI prompts that
+help to create Kodistubs can be found in their own repository**
+
 Script for generating [Kodistubs](https://github.com/romanvm/Kodistubs).
 
 ## Description
